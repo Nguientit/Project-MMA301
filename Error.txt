@@ -1,0 +1,6 @@
+Lỗi tìm kiếm ở trang homepage guest
+Phần thanh toán khi hiện amount ở qr vẫn 0đ dù có sản phẩm, fix lại phần thanh toán
+Homepage phần recommend đang bị kéo lỏ
+categories homepage đang bị lặp icon mà t đéo biết fix
+lỗi phần tim trong mục chi tiết món ăn
+role của receiver và waiter nó đang bị trùng nhau, cả 2 thằng đều confirm payment và từ chối đơn được, tao thấy phần này lỏ vãi l 
