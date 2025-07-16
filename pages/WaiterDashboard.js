@@ -26,7 +26,7 @@ export default function WaiterDashboard() {
       const storedUsername = await AsyncStorage.getItem("username");
 
       if (storedRole !== "waiter") {
-        Alert.alert("Access Denied", "You don't have permission to access this page!");
+        Alert.alert("Từ chối truy cập!", "Bạn không có quyền xem trang này!");
         navigation.replace("Login");
         return;
       }
@@ -48,8 +48,8 @@ export default function WaiterDashboard() {
 
   const handleLogout = async () => {
     Alert.alert(
-      "Confirm Logout",
-      "Are you sure you want to logout?",
+      "Xác nhận đăng xuất",
+      "Bạn muốn đăng xuất?",
       [
         { text: "Cancel", style: "cancel" },
         {

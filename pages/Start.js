@@ -61,7 +61,7 @@ const StartScreen = () => {
           <View style={styles.iconWrapper}>
             <Ionicons name="restaurant" size={80} color="#FDEBD0" />
           </View>
-          <Text style={styles.title}>BTN RESTAURANT</Text>
+          <Text style={styles.title}>BTN Group</Text>
           <Text style={styles.emoji}>🍽️</Text>
         </Animated.View>
 
