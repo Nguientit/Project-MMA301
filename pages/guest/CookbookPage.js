@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { useFocusEffect } from "@react-navigation/native";
 import uuid from "react-native-uuid";
+import NotificationService from "../services/NotificationService";
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -93,10 +94,18 @@ export default function CartPage() {
     orders.push(newOrder);
     await AsyncStorage.setItem("orders", JSON.stringify(orders));
 
+    // Gửi push notification khi đặt hàng thành công
+    await NotificationService.sendOrderPlacedNotification(newOrder);
+
     setCartItems([]);
     await AsyncStorage.removeItem("cartItems");
 
     setShowQR(true);
+
+    // Mô phỏng việc món ăn sẵn sàng sau 10 phút (trong thực tế sẽ được trigger từ bếp)
+    setTimeout(async () => {
+      await NotificationService.sendOrderReadyNotification(newOrder);
+    }, 10 * 60 * 1000); // 10 phút
   };
 
   const renderItem = ({ item }) => (
@@ -207,16 +216,18 @@ export default function CartPage() {
 
             <View style={styles.qrContainer}>
               <Image
-                source={require("../assets/qr-code.jpg")}
+                source={require("../../assets/qr-code.jpg")}
                 style={styles.qrImage}
                 resizeMode="contain"
               />
             </View>
 
             <View style={styles.paymentInfo}>
-
               <Text style={styles.paymentNote}>
                 Please show this QR code to the cashier
+              </Text>
+              <Text style={styles.notificationNote}>
+                📱 You will receive a notification when your order is ready
               </Text>
             </View>
 
@@ -251,6 +262,13 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
     position: "relative",
+  },
+  notificationNote: {
+    fontSize: 12,
+    color: "#E67E22",
+    textAlign: "center",
+    marginTop: 8,
+    fontStyle: "italic",
   },
   title: {
     fontSize: 24,

@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { recipes } from '../data';
+import { recipes } from '../../data';
 
 const ExplorePage = () => {
   const navigation = useNavigation();

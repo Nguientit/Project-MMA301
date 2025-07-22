@@ -2,10 +2,10 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import HomePage from "../pages/HomePage";
-import ProfilePage from "../pages/ProfilePage";
-import ExplorePage from "../pages/ExplorePage";
-import CookbookPage from "../pages/CookbookPage";
+import HomePage from "../pages/guest/HomePage";
+import ProfilePage from "../pages/guest/ProfilePage";
+import ExplorePage from "../pages/guest/ExplorePage";
+import CookbookPage from "../pages/guest/CookbookPage";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,7 +26,7 @@ export default function MainTabNavigator() {
             iconName = focused ? "cart" : "cart-outline";
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "#5550F2",
+        tabBarActiveTintColor: "#D35400",
         tabBarInactiveTintColor: "gray",
         sceneStyle: { backgroundColor: "white", paddingTop: 50 },
       })}

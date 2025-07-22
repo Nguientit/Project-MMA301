@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
-import database from "../database.json";
+import database from "../../database.json";
 
 const RecipeDetail = ({ route, navigation }) => {
   const { recipe } = route.params;

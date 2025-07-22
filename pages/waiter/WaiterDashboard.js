@@ -1,117 +1,102 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-  TouchableOpacity,
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+"use client"
+
+import { useEffect, useState } from "react"
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert, TouchableOpacity } from "react-native"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useNavigation } from "@react-navigation/native"
+import Ionicons from "react-native-vector-icons/Ionicons"
 
 export default function WaiterDashboard() {
-  const [name, setName] = useState("");
-  const [role, setRole] = useState("");
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const navigation = useNavigation();
+  const [name, setName] = useState("")
+  const [role, setRole] = useState("")
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const navigation = useNavigation()
 
   useEffect(() => {
     const load = async () => {
-      const storedName = await AsyncStorage.getItem("nameUser");
-      const storedRole = await AsyncStorage.getItem("role");
-      const storedUsername = await AsyncStorage.getItem("username");
+      const storedName = await AsyncStorage.getItem("nameUser")
+      const storedRole = await AsyncStorage.getItem("role")
+      const storedUsername = await AsyncStorage.getItem("username")
 
       if (storedRole !== "waiter") {
-        Alert.alert("Access Denied", "You don't have permission to access this page!");
-        navigation.replace("Login");
-        return;
+        Alert.alert("Access Denied", "You don't have permission to access this page!")
+        navigation.replace("Login")
+        return
       }
 
-      const storedOrders = await AsyncStorage.getItem("paidOrders");
-      const allOrders = storedOrders ? JSON.parse(storedOrders) : [];
-      const filteredOrders = allOrders.filter(
-        (order) => order.waiterId === storedUsername
-      );
+      const storedOrders = await AsyncStorage.getItem("paidOrders")
+      const allOrders = storedOrders ? JSON.parse(storedOrders) : []
+      const filteredOrders = allOrders.filter((order) => order.waiterId === storedUsername)
 
-      setOrders(filteredOrders);
-      setName(storedName || "");
-      setRole(storedRole || "");
-      setLoading(false);
-    };
+      setOrders(filteredOrders)
+      setName(storedName || "")
+      setRole(storedRole || "")
+      setLoading(false)
+    }
 
-    load();
-  }, []);
+    load()
+  }, [])
 
   const handleLogout = async () => {
-    Alert.alert(
-      "Confirm Logout",
-      "Are you sure you want to logout?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Logout",
-          style: "destructive",
-          onPress: async () => {
-            await AsyncStorage.multiRemove(["username", "nameUser", "role", "isGuest"]);
-            navigation.replace("Login");
-          },
+    Alert.alert("Confirm Logout", "Are you sure you want to logout?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: async () => {
+          await AsyncStorage.multiRemove(["username", "nameUser", "role", "isGuest"])
+          navigation.replace("Login")
         },
-      ]
-    );
-  };
+      },
+    ])
+  }
 
   const handleCompleteTable = async (orderId) => {
-    Alert.alert(
-      "Complete Table Service",
-      "Mark this table as completed?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Complete",
-          onPress: async () => {
-            const storedOrders = await AsyncStorage.getItem("paidOrders");
-            const allOrders = storedOrders ? JSON.parse(storedOrders) : [];
-            const updatedOrders = allOrders.filter((order) => order.id !== orderId);
-            await AsyncStorage.setItem("paidOrders", JSON.stringify(updatedOrders));
-            setOrders(orders.filter(order => order.id !== orderId));
-            Alert.alert("Success", "Table service completed!");
-          },
+    Alert.alert("Complete Table Service", "Mark this table as completed?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Complete",
+        onPress: async () => {
+          const storedOrders = await AsyncStorage.getItem("paidOrders")
+          const allOrders = storedOrders ? JSON.parse(storedOrders) : []
+          const updatedOrders = allOrders.filter((order) => order.id !== orderId)
+          await AsyncStorage.setItem("paidOrders", JSON.stringify(updatedOrders))
+          setOrders(orders.filter((order) => order.id !== orderId))
+          Alert.alert("Success", "Table service completed!")
         },
-      ]
-    );
-  };
+      },
+    ])
+  }
+
+  const handleMessageCustomer = (tableId) => {
+    navigation.navigate("WaiterMessagingPage", { tableId })
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
       case "Đã thanh toán":
-        return "#28a745";
+        return "#28a745"
       case "Đã huỷ":
-        return "#D35400";
+        return "#D35400"
       default:
-        return "#4D5656";
+        return "#4D5656"
     }
-  };
+  }
 
   const getStatusIcon = (status) => {
     switch (status) {
       case "Đã thanh toán":
-        return "checkmark-circle";
+        return "checkmark-circle"
       case "Đã huỷ":
-        return "close-circle";
+        return "close-circle"
       default:
-        return "time";
+        return "time"
     }
-  };
+  }
 
   const renderItem = ({ item }) => {
-    const totalPrice = item.items.reduce(
-      (sum, food) => sum + food.price * food.quantity,
-      0
-    );
+    const totalPrice = item.items.reduce((sum, food) => sum + food.price * food.quantity, 0)
 
     return (
       <View style={styles.orderCard}>
@@ -122,9 +107,7 @@ export default function WaiterDashboard() {
           </View>
           <View style={styles.timeInfo}>
             <Ionicons name="time" size={16} color="#4D5656" />
-            <Text style={styles.timeText}>
-              {new Date(item.createdAt).toLocaleTimeString()}
-            </Text>
+            <Text style={styles.timeText}>{new Date(item.createdAt).toLocaleTimeString()}</Text>
           </View>
         </View>
 
@@ -134,9 +117,7 @@ export default function WaiterDashboard() {
               <Text style={styles.foodItem}>
                 {food.name} x{food.quantity}
               </Text>
-              <Text style={styles.foodPrice}>
-                {food.price.toLocaleString()}đ
-              </Text>
+              <Text style={styles.foodPrice}>{food.price.toLocaleString()}đ</Text>
             </View>
           ))}
         </View>
@@ -144,32 +125,28 @@ export default function WaiterDashboard() {
         <View style={styles.orderFooter}>
           <View style={styles.totalContainer}>
             <Text style={styles.totalLabel}>Total:</Text>
-            <Text style={styles.totalPrice}>
-              {totalPrice.toLocaleString()}đ
-            </Text>
+            <Text style={styles.totalPrice}>{totalPrice.toLocaleString()}đ</Text>
           </View>
           <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-            <Ionicons
-              name={getStatusIcon(item.status)}
-              size={14}
-              color="#FDEBD0"
-            />
-            <Text style={styles.statusText}>
-              {item.status === "Đã thanh toán" ? "Paid" : "Cancelled"}
-            </Text>
+            <Ionicons name={getStatusIcon(item.status)} size={14} color="#FDEBD0" />
+            <Text style={styles.statusText}>{item.status === "Đã thanh toán" ? "Paid" : "Cancelled"}</Text>
           </View>
         </View>
 
-        <TouchableOpacity
-          style={styles.completeButton}
-          onPress={() => handleCompleteTable(item.id)}
-        >
-          <Ionicons name="checkmark-done" size={20} color="#FDEBD0" />
-          <Text style={styles.completeButtonText}>Complete Service</Text>
-        </TouchableOpacity>
+        <View style={styles.actionButtons}>
+          <TouchableOpacity style={styles.messageButton} onPress={() => handleMessageCustomer(item.tableId)}>
+            <Ionicons name="chatbubbles" size={18} color="#FDEBD0" />
+            <Text style={styles.messageButtonText}>Nhắn tin</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.completeButton} onPress={() => handleCompleteTable(item.id)}>
+            <Ionicons name="checkmark-done" size={18} color="#FDEBD0" />
+            <Text style={styles.completeButtonText}>Hoàn thành</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    );
-  };
+    )
+  }
 
   if (loading) {
     return (
@@ -177,7 +154,7 @@ export default function WaiterDashboard() {
         <ActivityIndicator size="large" color="#E67E22" />
         <Text style={styles.loadingText}>Loading orders...</Text>
       </View>
-    );
+    )
   }
 
   return (
@@ -190,6 +167,9 @@ export default function WaiterDashboard() {
             <Text style={styles.userName}>{name}</Text>
           </View>
         </View>
+        <TouchableOpacity style={styles.messagingButton} onPress={() => navigation.navigate("WaiterMessagingPage")}>
+          <Ionicons name="chatbubbles-outline" size={20} color="#FDEBD0" />
+        </TouchableOpacity>
         <Text style={styles.roleText}>Waiter Dashboard</Text>
       </View>
 
@@ -223,13 +203,13 @@ export default function WaiterDashboard() {
         </TouchableOpacity>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FDEBD0"
+    backgroundColor: "#FDEBD0",
   },
   header: {
     backgroundColor: "#E67E22",
@@ -246,6 +226,7 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     marginLeft: 15,
+    flex: 1,
   },
   welcomeTitle: {
     fontSize: 16,
@@ -256,6 +237,14 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     color: "#FDEBD0",
+  },
+  messagingButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#D35400",
+    justifyContent: "center",
+    alignItems: "center",
   },
   roleText: {
     fontSize: 14,
@@ -386,7 +375,26 @@ const styles = StyleSheet.create({
     color: "#FDEBD0",
     marginLeft: 4,
   },
+  actionButtons: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  messageButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#3498DB",
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  messageButtonText: {
+    color: "#FDEBD0",
+    fontWeight: "bold",
+    marginLeft: 6,
+  },
   completeButton: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -397,7 +405,7 @@ const styles = StyleSheet.create({
   completeButtonText: {
     color: "#FDEBD0",
     fontWeight: "bold",
-    marginLeft: 8,
+    marginLeft: 6,
   },
   emptyContainer: {
     alignItems: "center",
@@ -445,4 +453,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#2C3E50",
   },
-});
+})
